@@ -15,7 +15,15 @@ class ExchangeController extends Controller
      */
     public function index()
     {
-        //
+        $client = new Client();
+        $url = env('API_NBP').'exchangerates/tables/b?format=json';
+
+        $response = $client->request('GET', $url, [
+            'verify'  => false,
+        ]);
+
+        $responseBody = json_decode($response->getBody());
+        return $responseBody[0]->rates;
     }
 
     /**
