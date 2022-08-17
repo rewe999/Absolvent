@@ -2,12 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Models\CurrencyDate;
 use App\Models\Exchange;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Monolog\Logger;
 
-class DailyCourse extends Command
+class UpdateExchangeRate extends Command
 {
     /**
      * The name and signature of the console command.
@@ -26,7 +28,7 @@ class DailyCourse extends Command
     public function handle()
     {
         $client = new Client();
-        $url = env('API_NBP').'exchangerates/tables/a?format=json';
+        $url = env('API_NBP').'exchangerates/tables/b?format=json';
 
         $response = $client->request('GET', $url, [
             'verify'  => false,
@@ -41,5 +43,9 @@ class DailyCourse extends Command
                 'mid' => $res->mid]
             );
         }
+
+        CurrencyDate::updateOrCreate(
+            ['date' => Carbon::now()]
+        );
     }
 }

@@ -12,7 +12,7 @@ class ExchangeController extends Controller
     {
         $iHave = $request['have'];
         $iWant = $request['want'];
-        $howMatch = $request['how'];
+        $howMany = $request['how'];
 
         $exchangeHave = Exchange::where('code', $iHave)->first();
         $exchangeWant = Exchange::where('code', $iWant)->first();
@@ -24,23 +24,23 @@ class ExchangeController extends Controller
         }
 
         if($iHave == "PLN"){
-            return Response()->json([
+            return $this->getResponse([
                 'from' => $iHave,
                 'to' => $iWant,
-                'course' => round(($exchangeHave->mid / $exchangeWant->mid) * $howMatch,3)
+                'course' => round(($exchangeHave->mid / $exchangeWant->mid) * $howMany,3)
             ]);
         }elseif ($iHave == $iWant) {
-            return Response()->json([
+            return $this->getResponse([
                 'from' => $iHave,
                 'to' => $iWant,
-                'course' => $exchangeHave->mid * $howMatch
+                'course' => $howMany
             ]);
         }
         else {
-            return Response()->json([
+            return $this->getResponse([
                 'from' => $iHave,
                 'to' => $iWant,
-                'course' => round($exchangeHave->mid * $exchangeWant->mid * $howMatch, 3)
+                'course' => round($exchangeHave->mid / $exchangeWant->mid * $howMany, 2)
             ]);
         }
     }
@@ -57,5 +57,10 @@ class ExchangeController extends Controller
         $currencies = Exchange::all()->count();
 
         return Response()->json(['currency counter' => $currencies]);
+    }
+
+    public function getResponse($data): JsonResponse
+    {
+        return Response()->json($data);
     }
 }
