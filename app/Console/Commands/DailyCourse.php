@@ -23,15 +23,10 @@ class DailyCourse extends Command
      */
     protected $description = 'Get daily courses';
 
-    /**
-     * Execute the console command.
-     *
-     * @return int
-     */
     public function handle()
     {
         $client = new Client();
-        $url = env('API_NBP').'exchangerates/tables/b?format=json';
+        $url = env('API_NBP').'exchangerates/tables/a?format=json';
 
         $response = $client->request('GET', $url, [
             'verify'  => false,

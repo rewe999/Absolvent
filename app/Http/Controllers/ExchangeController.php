@@ -3,92 +3,59 @@
 namespace App\Http\Controllers;
 
 use App\Models\Exchange;
-use GuzzleHttp\Client;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ExchangeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        $client = new Client();
-        $url = env('API_NBP').'exchangerates/tables/b?format=json';
+        $iHave = $request['have'];
+        $iWant = $request['want'];
+        $howMatch = $request['how'];
 
-        $response = $client->request('GET', $url, [
-            'verify'  => false,
-        ]);
+        $exchangeHave = Exchange::where('code', $iHave)->first();
+        $exchangeWant = Exchange::where('code', $iWant)->first();
 
-        $responseBody = json_decode($response->getBody());
-        return $responseBody[0]->rates;
+        if(!$exchangeHave || !$exchangeWant) {
+            return Response()->json([
+                'error' => "not found exchange"
+            ]);
+        }
+
+        if($iHave == "PLN"){
+            return Response()->json([
+                'from' => $iHave,
+                'to' => $iWant,
+                'course' => round(($exchangeHave->mid / $exchangeWant->mid) * $howMatch,3)
+            ]);
+        }elseif ($iHave == $iWant) {
+            return Response()->json([
+                'from' => $iHave,
+                'to' => $iWant,
+                'course' => $exchangeHave->mid * $howMatch
+            ]);
+        }
+        else {
+            return Response()->json([
+                'from' => $iHave,
+                'to' => $iWant,
+                'course' => round($exchangeHave->mid * $exchangeWant->mid * $howMatch, 3)
+            ]);
+        }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function getAllCurrencies(): JsonResponse
     {
-        //
+        $currencies = Exchange::all()->toArray();
+
+        return Response()->json($currencies);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function countCurrencies(): JsonResponse
     {
-        //
-    }
+        $currencies = Exchange::all()->count();
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Exchange  $exchange
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Exchange $exchange)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Exchange  $exchange
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Exchange $exchange)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Exchange  $exchange
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Exchange $exchange)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Exchange  $exchange
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Exchange $exchange)
-    {
-        //
+        return Response()->json(['currency counter' => $currencies]);
     }
 }
