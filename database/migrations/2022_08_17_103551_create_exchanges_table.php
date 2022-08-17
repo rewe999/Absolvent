@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('currency');
             $table->string('code');
-            $table->float('mid');
+            $table->double('mid');
         });
     }
 
