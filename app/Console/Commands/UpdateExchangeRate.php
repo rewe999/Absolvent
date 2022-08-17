@@ -7,7 +7,9 @@ use App\Models\Exchange;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Monolog\Logger;
+use Throwable;
 
 class UpdateExchangeRate extends Command
 {
@@ -27,25 +29,30 @@ class UpdateExchangeRate extends Command
 
     public function handle()
     {
-        $client = new Client();
-        $url = env('API_NBP').'exchangerates/tables/b?format=json';
+        try {
+            $client = new Client();
+            $url = env('API_NBP').'exchangerates/tables/a?format=json';
 
-        $response = $client->request('GET', $url, [
-            'verify'  => false,
-        ]);
+            $response = $client->request('GET', $url, [
+                'verify'  => false,
+            ]);
 
-        $responseBody = json_decode($response->getBody());
+            $responseBody = json_decode($response->getBody());
 
-        foreach($responseBody[0]->rates as $res){
-            Exchange::updateOrCreate(
-                ['currency' => $res->currency,
-                'code' => $res->code,
-                'mid' => $res->mid]
+            foreach($responseBody[0]->rates as $res){
+                Exchange::updateOrCreate(
+                    ['currency' => $res->currency,
+                        'code' => $res->code,
+                        'mid' => $res->mid]
+                );
+            }
+
+            CurrencyDate::updateOrCreate(
+                ['date' => Carbon::now()]
             );
+        }catch (Throwable $e){
+            echo "error update exchange rate " . date('Y-m-d G:i:s'). "\n";
+            Log::error('error update exchange rate '. $e->getMessage());
         }
-
-        CurrencyDate::updateOrCreate(
-            ['date' => Carbon::now()]
-        );
     }
 }

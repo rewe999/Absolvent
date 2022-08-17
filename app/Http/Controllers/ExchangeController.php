@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Exchange;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ExchangeController extends Controller
 {
@@ -16,6 +17,13 @@ class ExchangeController extends Controller
 
         $exchangeHave = Exchange::where('code', $iHave)->first();
         $exchangeWant = Exchange::where('code', $iWant)->first();
+        $day = DB::selectOne("SELECT * FROM currency_dates order by date desc limit 1")->date;
+
+        $data = [
+            'exchange date' => $day,
+            'from' => $iHave,
+            'to' => $iWant,
+        ];
 
         if(!$exchangeHave || !$exchangeWant) {
             return Response()->json([
@@ -24,24 +32,15 @@ class ExchangeController extends Controller
         }
 
         if($iHave == "PLN"){
-            return $this->getResponse([
-                'from' => $iHave,
-                'to' => $iWant,
-                'course' => round(($exchangeHave->mid / $exchangeWant->mid) * $howMany,3)
-            ]);
+            $data['course'] = round(($exchangeHave->mid / $exchangeWant->mid) * $howMany,3);
+            return $this->getResponse($data);
         }elseif ($iHave == $iWant) {
-            return $this->getResponse([
-                'from' => $iHave,
-                'to' => $iWant,
-                'course' => $howMany
-            ]);
+            $data['course'] = $howMany;
+            return $this->getResponse($data);
         }
         else {
-            return $this->getResponse([
-                'from' => $iHave,
-                'to' => $iWant,
-                'course' => round($exchangeHave->mid / $exchangeWant->mid * $howMany, 2)
-            ]);
+            $data['course'] = round($exchangeHave->mid / $exchangeWant->mid * $howMany, 2);
+            return $this->getResponse($data);
         }
     }
 
