@@ -44,8 +44,22 @@ composer install
  php artisan migrate
 ```
 
-### 7. Now you can access the app here:
+### 7. Run Seeders:
+```shell script
+ php artisan db:seed
+```
+
+### 8. Generate API docs:
+```shell script
+ php artisan l5-swagger:generate
+```
+
+### 9. Now you can access the app here:
 http://localhost/
+
+Swagger documentation is available at the link:
+
+http://localhost/api/documentation
 
 ## Author:
 - [Patryk Zym](https://github.com/rewe999/)

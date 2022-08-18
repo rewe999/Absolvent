@@ -22,7 +22,7 @@
                                 "required": [
                                     "from",
                                     "to",
-                                    "how"
+                                    "quantity"
                                 ],
                                 "properties": {
                                     "from": {
@@ -33,7 +33,7 @@
                                         "type": "string",
                                         "example": "CAD"
                                     },
-                                    "how": {
+                                    "quantity": {
                                         "type": "number",
                                         "example": "1"
                                     }
@@ -109,7 +109,7 @@
         "/api/count": {
             "get": {
                 "tags": [
-                    "Ccount Currencies"
+                    "Count Currencies"
                 ],
                 "summary": "Get information how many currencies are available",
                 "description": "Get information how many currencies are available",
