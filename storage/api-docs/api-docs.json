@@ -1,0 +1,141 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Currency Conversion API",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/exchange": {
+            "post": {
+                "tags": [
+                    "List Contents"
+                ],
+                "summary": "currency conversion e.g. from euro to dollar",
+                "description": "currency conversion e.g. from euro to dollar",
+                "operationId": "postListContent",
+                "requestBody": {
+                    "description": "Provide product list id and product id",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "from",
+                                    "to",
+                                    "how"
+                                ],
+                                "properties": {
+                                    "from": {
+                                        "type": "string",
+                                        "example": "EUR"
+                                    },
+                                    "to": {
+                                        "type": "string",
+                                        "example": "CAD"
+                                    },
+                                    "how": {
+                                        "type": "number",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "response json"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/currencies": {
+            "get": {
+                "tags": [
+                    "Get All Currencies"
+                ],
+                "summary": "Get all available currencies",
+                "description": "Get all available currencies",
+                "operationId": "getAllCurrencies",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/api/currency/EUR": {
+            "get": {
+                "tags": [
+                    "Get Currency"
+                ],
+                "summary": "Get information aboout currency",
+                "description": "Get information aboout currency",
+                "operationId": "getCurrency",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "currencyName": {
+                                            "type": "string",
+                                            "example": "EUR"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/count": {
+            "get": {
+                "tags": [
+                    "Ccount Currencies"
+                ],
+                "summary": "Get information how many currencies are available",
+                "description": "Get information how many currencies are available",
+                "operationId": "countCurrencies",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        }
+    },
+    "security": {
+        "passport": {
+            "type": "oauth2",
+            "description": "Laravel passport oauth2 security.",
+            "in": "header",
+            "scheme": "https",
+            "flows": {
+                "password": {
+                    "authorizationUrl": "http://absolvent.test/oauth/authorize",
+                    "tokenUrl": "http://absolvent.test/oauth/token",
+                    "refreshUrl": "http://absolvent.test/token/refresh",
+                    "scopes": []
+                }
+            }
+        }
+    }
+}

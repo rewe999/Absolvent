@@ -11,6 +11,32 @@ use Illuminate\Support\Facades\DB;
 
 class ExchangeController extends Controller
 {
+    /**
+     * @OA\Post(
+     * path="/api/exchange",
+     * summary="currency conversion e.g. from euro to dollar",
+     * description="currency conversion e.g. from euro to dollar",
+     * operationId="postListContent",
+     * tags={"List Contents"},
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="Provide product list id and product id",
+     *    @OA\JsonContent(
+     *       required={"from","to","how"},
+     *       @OA\Property(property="from", type="string", example="EUR"),
+     *       @OA\Property(property="to", type="string", example="CAD"),
+     *       @OA\Property(property="how", type="number", example="1")
+     *    ),
+     * ),
+     * @OA\Response(
+     *    response=200,
+     *    description="Success",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="message", type="string", example="response json")
+     *        )
+     *     )
+     * )
+     */
     public function index(Request $request): JsonResponse
     {
         $quantity_before_conversion = strtoupper($request['from']);
@@ -46,6 +72,21 @@ class ExchangeController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     * path="/api/currencies",
+     * summary="Get all available currencies",
+     * description="Get all available currencies",
+     * operationId="getAllCurrencies",
+     * tags={"Get All Currencies"},
+     * @OA\Response(
+     *    response=200,
+     *    description="Success"
+     *    )
+     *
+     *
+     * )
+     */
     public function getAllCurrencies(): JsonResponse
     {
         $currencies = Exchange::all()->toArray();
@@ -53,6 +94,24 @@ class ExchangeController extends Controller
         return response()->json($currencies);
     }
 
+    /**
+     * @OA\Get(
+     * path="/api/currency/EUR",
+     * summary="Get information aboout currency",
+     * description="Get information aboout currency",
+     * operationId="getCurrency",
+     * tags={"Get Currency"},
+     * @OA\Response(
+     *    response=200,
+     *    description="Success",
+     *     @OA\JsonContent(
+     *       @OA\Property(property="currencyName", type="string", example="EUR")
+     *       )
+     *    )
+     *
+     *
+     * )
+     */
     public function getCurrency($currencyName)
     {
         $currency = Exchange::where('code', strtoupper($currencyName))->first();
@@ -66,6 +125,21 @@ class ExchangeController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Get(
+     * path="/api/count",
+     * summary="Get information how many currencies are available",
+     * description="Get information how many currencies are available",
+     * operationId="countCurrencies",
+     * tags={"Ccount Currencies"},
+     * @OA\Response(
+     *    response=200,
+     *    description="Success"
+     *    )
+     *
+     *
+     * )
+     */
     public function countCurrencies(): JsonResponse
     {
         $currencies = Exchange::all()->count();
