@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Models\Exchange;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -27,8 +28,21 @@ class ExchangeTest extends TestCase
 
     public function test_currency_exchange()
     {
+
+        $dolar = new Exchange();
+        $dolar->currency = "dolar kanadyjski";
+        $dolar->code = "CAD";
+        $dolar->mid = 3.5994;
+        $dolar->save();
+
+        $euro = new Exchange();
+        $euro->currency = "euro";
+        $euro->code = "EUR";
+        $euro->mid = 4.7244;
+        $euro->save();
+
         $data = [
-            "from" => "PLN",
+            "from" => "CAD",
             "to" => "EUR",
             "how" => 1
         ];
@@ -64,8 +78,14 @@ class ExchangeTest extends TestCase
 
     public function test_one_currency_if_exist()
     {
+        $exchange = new Exchange();
+        $exchange->currency = "polski złotych";
+        $exchange->code = "PLN";
+        $exchange->mid = 1;
+        $exchange->save();
+
         $response = $this->get('/api/currency/PLN');
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertStatus(Response::HTTP_OK);
     }
 
     public function test_one_currency_if_not_exist()
