@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class ExchangeController extends Controller
 {
+    const PLN = "PLN";
     /**
      * @OA\Post(
      * path="/api/exchange",
@@ -22,10 +23,10 @@ class ExchangeController extends Controller
      *    required=true,
      *    description="Provide product list id and product id",
      *    @OA\JsonContent(
-     *       required={"from","to","how"},
+     *       required={"from","to","quantity"},
      *       @OA\Property(property="from", type="string", example="EUR"),
      *       @OA\Property(property="to", type="string", example="CAD"),
-     *       @OA\Property(property="how", type="number", example="1")
+     *       @OA\Property(property="quantity", type="number", example="1")
      *    ),
      * ),
      * @OA\Response(
@@ -39,35 +40,35 @@ class ExchangeController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $quantity_before_conversion = strtoupper($request['from']);
-        $quantity_after_conversion = strtoupper($request['to']);
-        $target_quantity = $request['how'];
+        $fromCurrency = strtoupper($request['from']);
+        $toCurrency = strtoupper($request['to']);
+        $quantity = $request['quantity'];
 
-        $exchangeHave = Exchange::where('code', $quantity_before_conversion)->first();
-        $exchangeWant = Exchange::where('code', $quantity_after_conversion)->first();
+        $exchangeHave = Exchange::where('code', $fromCurrency)->first();
+        $exchangeWant = Exchange::where('code', $toCurrency)->first();
         $day = CurrencyDate::orderBy('date', 'desc')->first()->date ?? Carbon::now();
 
         $data = [
-            'exchange date' => $day,
-            'from' => $quantity_before_conversion,
-            'to' => $quantity_after_conversion,
+            'exchange_date' => $day,
+            'from' => $fromCurrency,
+            'to' => $toCurrency
         ];
 
         if(!$exchangeHave || !$exchangeWant) {
             return response()->json([
-                'error' => "not found exchange"
+                'error' => "exchange not found"
             ],404);
         }
 
-        if($quantity_before_conversion == "PLN"){
-            $data['course'] = round(($exchangeHave->mid / $exchangeWant->mid) * $target_quantity,3);
+        if($fromCurrency == self::PLN){
+            $data['rate'] = round(($exchangeHave->mid / $exchangeWant->mid) * $quantity,3);
             return response()->json($data,200);
-        }elseif ($quantity_before_conversion == $quantity_after_conversion) {
-            $data['course'] = $target_quantity;
+        }elseif ($fromCurrency == $toCurrency) {
+            $data['rate'] = $quantity;
             return response()->json($data,200);
         }
         else {
-            $data['course'] = round($exchangeHave->mid / $exchangeWant->mid * $target_quantity, 2);
+            $data['rate'] = round($exchangeHave->mid / $exchangeWant->mid * $quantity, 2);
             return response()->json($data,200);
         }
     }
@@ -131,7 +132,7 @@ class ExchangeController extends Controller
      * summary="Get information how many currencies are available",
      * description="Get information how many currencies are available",
      * operationId="countCurrencies",
-     * tags={"Ccount Currencies"},
+     * tags={"Count Currencies"},
      * @OA\Response(
      *    response=200,
      *    description="Success"

@@ -44,7 +44,7 @@ class ExchangeTest extends TestCase
         $data = [
             "from" => "CAD",
             "to" => "EUR",
-            "how" => 1
+            "quantity" => 1
         ];
 
         $response = $this->post('/api/exchange', $data);
@@ -56,7 +56,7 @@ class ExchangeTest extends TestCase
         $response = Http::get('http://api.nbp.pl/api/exchangerates/tables/a?format=json');
         $status = $response->status();
 
-        if($status == 200) $this->assertTrue(true);
+        if($status == Response::HTTP_OK) $this->assertTrue(true);
     }
 
     public function test_command_to_insert_or_update_exchanges()
@@ -69,7 +69,7 @@ class ExchangeTest extends TestCase
         $data = [
             "from" => "non existent exchange 1",
             "to" => "non existent exchange 2",
-            "how" => 15
+            "quantity" => 15
         ];
 
         $response = $this->post('/api/exchange', $data);
@@ -79,7 +79,7 @@ class ExchangeTest extends TestCase
     public function test_one_currency_if_exist()
     {
         $exchange = new Exchange();
-        $exchange->currency = "polski złotych";
+        $exchange->currency = "polski złoty";
         $exchange->code = "PLN";
         $exchange->mid = 1;
         $exchange->save();
