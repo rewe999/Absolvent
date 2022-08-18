@@ -7,6 +7,7 @@ use App\Models\Exchange;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Monolog\Logger;
@@ -34,11 +35,15 @@ class UpdateExchangeRate extends Command
             $currencies = Http::get('http://api.nbp.pl/api/exchangerates/tables/a?format=json')->json();
 
             foreach ($currencies[0]['rates'] as $rates){
-                Exchange::updateOrCreate([
-                    'currency' => $rates['currency'],
-                    'code' => $rates['code'],
-                    'mid' => $rates['mid']
-                ]);
+                if(!Exchange::where(['currency' => $rates['currency'], 'code' => $rates['code']])->first()){
+                    $exchange = new Exchange();
+                    $exchange->currency = $rates['currency'];
+                    $exchange->code = $rates['code'];
+                    $exchange->mid = $rates['mid'];
+                    $exchange->save();
+                }else {
+                    Exchange::where(['currency' => $rates['currency'], 'code' => $rates['code']])->update(['mid' => $rates['mid']]);
+                }
             }
 
             CurrencyDate::updateOrCreate(
