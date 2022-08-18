@@ -39,8 +39,14 @@ class ExchangeTest extends TestCase
 
     public function test_api_nbp_connection()
     {
-        $response = $this->get('http://api.nbp.pl/api/exchangerates/tables/a?format=json');
+        $response = Http::get('http://api.nbp.pl/api/exchangerates/tables/a?format=json');
+        $status = $response->status();
 
-        $response->assertStatus(200);
+        if($status == 200) $this->assertTrue(true);
+    }
+
+    public function test_command_to_insert_or_update_exchanges()
+    {
+        $this->artisan('exchange:daily')->assertSuccessful();
     }
 }
