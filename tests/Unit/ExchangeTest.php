@@ -61,4 +61,17 @@ class ExchangeTest extends TestCase
         $response = $this->post('/api/exchange', $data);
         $response->assertStatus(Response::HTTP_NOT_FOUND);
     }
+
+    public function test_one_currency_if_exist()
+    {
+        $response = $this->get('/api/currency/PLN');
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
+    }
+
+    public function test_one_currency_if_not_exist()
+    {
+        $response = $this->get('/api/currency/not_exist');
+
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
+    }
 }

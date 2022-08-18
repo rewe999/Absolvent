@@ -13,8 +13,8 @@ class ExchangeController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $quantity_before_conversion = $request['from'];
-        $quantity_after_conversion = $request['to'];
+        $quantity_before_conversion = strtoupper($request['from']);
+        $quantity_after_conversion = strtoupper($request['to']);
         $target_quantity = $request['how'];
 
         $exchangeHave = Exchange::where('code', $quantity_before_conversion)->first();
@@ -63,7 +63,7 @@ class ExchangeController extends Controller
             "currency" => $currency->currency,
             "code" => $currency->code,
             "mid" => $currency->mid,
-        ], 200);
+        ]);
     }
 
     public function countCurrencies(): JsonResponse
