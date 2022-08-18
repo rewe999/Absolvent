@@ -28,21 +28,21 @@ class ExchangeController extends Controller
         ];
 
         if(!$exchangeHave || !$exchangeWant) {
-            return Response()->json([
+            return response()->json([
                 'error' => "not found exchange"
-            ]);
+            ],404);
         }
 
         if($quantity_before_conversion == "PLN"){
             $data['course'] = round(($exchangeHave->mid / $exchangeWant->mid) * $target_quantity,3);
-            return $this->getResponse($data);
+            return response()->json($data,200);
         }elseif ($quantity_before_conversion == $quantity_after_conversion) {
             $data['course'] = $target_quantity;
-            return $this->getResponse($data);
+            return response()->json($data,200);
         }
         else {
             $data['course'] = round($exchangeHave->mid / $exchangeWant->mid * $target_quantity, 2);
-            return $this->getResponse($data);
+            return response()->json($data,200);
         }
     }
 
@@ -50,18 +50,13 @@ class ExchangeController extends Controller
     {
         $currencies = Exchange::all()->toArray();
 
-        return Response()->json($currencies);
+        return response()->json($currencies);
     }
 
     public function countCurrencies(): JsonResponse
     {
         $currencies = Exchange::all()->count();
 
-        return Response()->json(['currency counter' => $currencies]);
-    }
-
-    public function getResponse($data): JsonResponse
-    {
-        return Response()->json($data);
+        return response()->json(['currency counter' => $currencies]);
     }
 }

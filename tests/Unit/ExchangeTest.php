@@ -49,4 +49,16 @@ class ExchangeTest extends TestCase
     {
         $this->artisan('exchange:daily')->assertSuccessful();
     }
+
+    public function test_non_existent_exchange()
+    {
+        $data = [
+            "from" => "non existent exchange 1",
+            "to" => "non existent exchange 2",
+            "how" => 15
+        ];
+
+        $response = $this->post('/api/exchange', $data);
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
+    }
 }
