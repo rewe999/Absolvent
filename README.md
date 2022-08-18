@@ -19,10 +19,6 @@ copy .env.example .env
 ```shell script
 docker-compose up -d
 ```
-or
-```shell script
-./vendor/bin/sail up
-```
 
 ### 3. Enter the container:
 ```shell script
