@@ -18,14 +18,14 @@ class UpdateExchangeRate extends Command
      *
      * @var string
      */
-    protected $signature = 'course:daily';
+    protected $signature = 'exchange:daily';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Get daily courses';
+    protected $description = 'Get daily exchanges';
 
     public function handle()
     {

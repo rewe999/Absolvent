@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CurrencyDate;
 use App\Models\Exchange;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -11,18 +13,18 @@ class ExchangeController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $iHave = $request['have'];
-        $iWant = $request['want'];
-        $howMany = $request['how'];
+        $quantity_before_conversion = $request['from'];
+        $quantity_after_conversion = $request['to'];
+        $target_quantity = $request['how'];
 
-        $exchangeHave = Exchange::where('code', $iHave)->first();
-        $exchangeWant = Exchange::where('code', $iWant)->first();
-        $day = DB::selectOne("SELECT * FROM currency_dates order by date desc limit 1")->date;
+        $exchangeHave = Exchange::where('code', $quantity_before_conversion)->first();
+        $exchangeWant = Exchange::where('code', $quantity_after_conversion)->first();
+        $day = CurrencyDate::orderBy('date', 'desc')->first()->date ?? Carbon::now();
 
         $data = [
             'exchange date' => $day,
-            'from' => $iHave,
-            'to' => $iWant,
+            'from' => $quantity_before_conversion,
+            'to' => $quantity_after_conversion,
         ];
 
         if(!$exchangeHave || !$exchangeWant) {
@@ -31,15 +33,15 @@ class ExchangeController extends Controller
             ]);
         }
 
-        if($iHave == "PLN"){
-            $data['course'] = round(($exchangeHave->mid / $exchangeWant->mid) * $howMany,3);
+        if($quantity_before_conversion == "PLN"){
+            $data['course'] = round(($exchangeHave->mid / $exchangeWant->mid) * $target_quantity,3);
             return $this->getResponse($data);
-        }elseif ($iHave == $iWant) {
-            $data['course'] = $howMany;
+        }elseif ($quantity_before_conversion == $quantity_after_conversion) {
+            $data['course'] = $target_quantity;
             return $this->getResponse($data);
         }
         else {
-            $data['course'] = round($exchangeHave->mid / $exchangeWant->mid * $howMany, 2);
+            $data['course'] = round($exchangeHave->mid / $exchangeWant->mid * $target_quantity, 2);
             return $this->getResponse($data);
         }
     }
