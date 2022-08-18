@@ -21,4 +21,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/exchange', [ExchangeController::class, "index"]);
 Route::get('/currencies', [ExchangeController::class, "getAllCurrencies"]);
+Route::get('/currency/{currencyName}', [ExchangeController::class, "getCurrency"]);
 Route::get('/count', [ExchangeController::class, "countCurrencies"]);

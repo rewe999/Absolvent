@@ -53,6 +53,19 @@ class ExchangeController extends Controller
         return response()->json($currencies);
     }
 
+    public function getCurrency($currencyName)
+    {
+        $currency = Exchange::where('code', strtoupper($currencyName))->first();
+
+        if(!$currency) return response()->json(['error' => 'not found currency'], 404);
+
+        return response()->json([
+            "currency" => $currency->currency,
+            "code" => $currency->code,
+            "mid" => $currency->mid,
+        ], 200);
+    }
+
     public function countCurrencies(): JsonResponse
     {
         $currencies = Exchange::all()->count();
