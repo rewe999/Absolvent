@@ -35,27 +35,32 @@ composer install
  php artisan key:generate
 ```
 
-### 6. Run migrations:
+### 6. Add to .env file:
+```shell script
+ API_NBP=https://api.nbp.pl/api/
+```
+
+### 7. Run migrations:
 ```shell script
  php artisan migrate
 ```
 
-### 7. Run Seeders:
+### 8. Run Seeders:
 ```shell script
  php artisan db:seed
 ```
 
-### 8. Run Command:
+### 9. Run Command:
 ```shell script
  php artisan exchange:daily
 ```
 
-### 9. Generate API docs:
+### 10. Generate API docs:
 ```shell script
  php artisan l5-swagger:generate
 ```
 
-### 10. Now you can access the app here:
+### 11. Now you can access the app here:
 http://localhost/
 
 Swagger documentation is available at the link:
